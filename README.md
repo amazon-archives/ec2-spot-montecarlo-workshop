@@ -1,2 +1,5 @@
-# ec2-spot-montecarlo-workshop
-Supports a re:invent workshop covering batch processing of MonteCarlo Simulations on EC2 Spot for Financial trading analysis
+Ec2 Spot Montecarlo Workshop
+
+## License
+
+This library is licensed under the Apache 2.0 License. 
