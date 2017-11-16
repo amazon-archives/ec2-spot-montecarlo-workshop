@@ -294,10 +294,9 @@ Resources:
                 aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $ALLOCATION_ID
 
                 # set variables
-                WORKSHOPDIR=/home/ec2-user/ec2-spot-montecarlo-workshop/src
+                cd /home/ec2-user
                 git clone https://github.com/aws-samples/ec2-spot-montecarlo-workshop
-                WEBSITEDIR=/home/ec2-user/spot-montecarlo-workshop/src/web
-                mkdir $WEBSITEDIR
+                WORKSHOPDIR=/home/ec2-user/ec2-spot-montecarlo-workshop/src
 
                 #Configure Jupyter Notebook Password
                 jupyter-notebook --generate-config --allow-root
@@ -308,9 +307,9 @@ Resources:
                 cp /root/.jupyter/jupyter_notebook_config.py /home/ec2-user/.jupyter/jupyter_notebook_config.py
                 chown ec2-user:ec2-user $WORKSHOPDIR
                 rm $WORKSHOPDIR/password_temp
-                       
+
                 #Start Web and Jupyter
-                node $WEBSITEDIR/bin/www > stdout.txt 2>&1 &
+                node $WORKSHOPDIR/web/bin/www > stdout.txt 2>&1 &
                 jupyter notebook --allow-root --no-browser --port=${JupyterPort} &
                 aws ec2 create-tags --resources $INSTANCE_ID --tags Key=Name,Value=montecarlo-workshop
 
