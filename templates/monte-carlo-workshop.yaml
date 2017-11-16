@@ -296,7 +296,7 @@ Resources:
                 # set variables
                 WORKSHOPDIR=/home/ec2-user/ec2-spot-montecarlo-workshop/src
                 git clone https://github.com/aws-samples/ec2-spot-montecarlo-workshop
-                WEBSITEDIR=/home/ec2-user/spot-montecarlo-workshop/web
+                WEBSITEDIR=/home/ec2-user/spot-montecarlo-workshop/src/web
                 mkdir $WEBSITEDIR
 
                 #Configure Jupyter Notebook Password
@@ -307,13 +307,8 @@ Resources:
                 sed -i "s/#c.NotebookApp.password = ''/c.NotebookApp.password = '$(cat $WORKSHOPDIR/password_temp)'/g" /root/.jupyter/jupyter_notebook_config.py
                 cp /root/.jupyter/jupyter_notebook_config.py /home/ec2-user/.jupyter/jupyter_notebook_config.py
                 chown ec2-user:ec2-user $WORKSHOPDIR
-                rm $WORKSHOPDIR/password_temp 
-                
-                # Unzip website files
-                cd $WEBSITEDIR
-                chown ec2-user:ec2-user $WEBSITEDIR
-                unzip -qq $WORKSHOPDIR/src/deployment/spotlab80.zip
-                
+                rm $WORKSHOPDIR/password_temp
+                       
                 #Start Web and Jupyter
                 node $WEBSITEDIR/bin/www > stdout.txt 2>&1 &
                 jupyter notebook --allow-root --no-browser --port=${JupyterPort} &
