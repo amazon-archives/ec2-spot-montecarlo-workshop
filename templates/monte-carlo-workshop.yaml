@@ -57,7 +57,7 @@ Parameters:
     NoEcho: true
   JupyterPort:
     Default: 8888
-    Description: Optional - Change if you have a VPN/FW restriction on your machine.
+    Description: Leave this as 8888
     Type: String
   SourceCidr:
     Default: 0.0.0.0/0
@@ -294,8 +294,8 @@ Resources:
                 aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $ALLOCATION_ID
 
                 # set variables
-                WORKSHOPDIR=/home/ec2-user/spot-montecarlo-workshop
-                mkdir $WORKSHOPDIR
+                WORKSHOPDIR=/home/ec2-user/ec2-spot-montecarlo-workshop/src
+                git clone https://github.com/aws-samples/ec2-spot-montecarlo-workshop
                 WEBSITEDIR=/home/ec2-user/spot-montecarlo-workshop/web
                 mkdir $WEBSITEDIR
 
@@ -309,15 +309,11 @@ Resources:
                 chown ec2-user:ec2-user $WORKSHOPDIR
                 rm $WORKSHOPDIR/password_temp 
                 
-                # Download Web and Notebook files
+                # Unzip website files
                 cd $WEBSITEDIR
                 chown ec2-user:ec2-user $WEBSITEDIR
-                wget https://s3.us-west-2.amazonaws.com/reinvent2017-cmp316/spotlab80.zip
-                unzip -qq ./spotlab80.zip
-                rm ./spotlab80.zip
-                cd $WORKSHOPDIR
-                wget https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.ipynb
-
+                unzip -qq $WORKSHOPDIR/src/deployment/spotlab80.zip
+                
                 #Start Web and Jupyter
                 node $WEBSITEDIR/bin/www > stdout.txt 2>&1 &
                 jupyter notebook --allow-root --no-browser --port=${JupyterPort} &
