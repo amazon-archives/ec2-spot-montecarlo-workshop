@@ -3,8 +3,7 @@ import time
 import subprocess
 import config
 
-client_session = boto3.session.Session()
-aws_region = client_session.region_name
+REGION = str(config.REGION)
 QUEUE = str(config.QUEUE)
 
 sleepTime = 5
