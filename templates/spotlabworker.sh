@@ -1,6 +1,6 @@
 #!/bin/bash
 yum -y install git python-numpy python-matplotlib python-zmq python-scipy
-pip install pandas-datareader scipy
+pip install pandas-datareader scipy boto3
 
 REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}'`
 
