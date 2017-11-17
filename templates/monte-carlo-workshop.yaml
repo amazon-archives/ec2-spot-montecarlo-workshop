@@ -309,7 +309,9 @@ Resources:
                 rm $WORKSHOPDIR/password_temp
 
                 #Start Web and Jupyter
-                node $WORKSHOPDIR/web/bin/www > stdout.txt 2>&1 &
+                cd $WORKSHOPDIR
+                node web/bin/www > stdout.txt 2>&1 &
+                cd /
                 jupyter notebook --allow-root --no-browser --port=${JupyterPort} &
                 aws ec2 create-tags --resources $INSTANCE_ID --tags Key=Name,Value=montecarlo-workshop
 

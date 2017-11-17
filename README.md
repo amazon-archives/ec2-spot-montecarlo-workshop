@@ -124,15 +124,18 @@ If there was an error during the stack creation process, CloudFormation will rol
 
 The [Jupyter Notebook](http://jupyter.org/) allows you to create and share documents that contain live code, equations, visualizations and narrative text.
 
+1. Log into the Jupyter Notebook using the **Jupyter** URL output from the CloudFormation Template using the password you configured when building the stack.
+2. Click on the notebook named *monte-carlo-workshop.ipynb* and it should open in a new tab.
+3. Follow the instructions in the Notebook to complete Lab 2. If you're new to Jupyter, you press shift-enter, to proceed run code and/or proceed to the next section. When you're done with the Notebook, return here and we'll take the concepts we learned in this lab and build our own automated pipeline.
+
 
 <a name="lab3"></a>
 ### Lab 3 - Deploy an Automated Trading Strategy on EC2 Spot Fleet:
 
 #### Create the SQS Queue
 1. quick create an sqs standard queue
-2. record the SQS URL for later
-3. Edit IAM Policy on the EC2 instance - What do we want it to be
-
+2. record the SQS Name and URL for later
+3. Edit IAM Instance Policy on the EC2 instance. Add sqs:* 
 #### Configure the Web Client
 4. Launch Web Site
 5. click configuration
@@ -152,9 +155,43 @@ The [Jupyter Notebook](http://jupyter.org/) allows you to create and share docum
 	17. Click Submit (You can also preview the json if you want to see the message body
 18. You can view the json message in the SQS Queue.
 
-#### Create the Worker Fleet
-19. Create a Spot Fleet Request
-20. 
+#### Create the Spot Worker Fleet
+1. From the Management Console, Click **Services**, and select EC2.
+2. Select Spot Requests and click **Request Spot Instances**.
+3. Select **Request and Maintain** to create a fleet of Spot Instances.
+4. For **Target Capacity**, type **2**
+5. Leave the Amazon Linux AMI as the Default.
+6. Each EC2 Instance type and family has it's own independent Spot Market price. Under **Instance Types**, Click **Select** and pick the c3.xlarge, c3.2xlarge, and c4.xlarge to diversify our fleet. Click **Select** again to return to the previous screen.
+7.  For **Allocation Strategy**, pick **Diversified**.
+8. For **Network**, pick the VPC we created for the Spot Monte Carlo Workshop.
+9. Under Availability Zone, check the box next to the first two AZs. The Network Subnet should auto-populate. If the subnet dropdown box says "No subnets in this zone", uncheck and select another AZ
+10.  Select **Use automated bidding**
+11. Click **Next**
+12. We will use User Data to bootstrap our work nodes. Cut and paste the user data [script](https://github.com/aws-samples/ec2-spot-montecarlo-workshop/blob/master/templates/spotlabworker.sh) from the git hub repo.  You will need to replace **\<REPLACE WITH YOUR SQS QUEUE NAME>** with the name of the queue you created earlier. **TODO** Improve this workflow.
+12. Under **IAM instance profile**, pull the dropdown and select the profile beginning with the workshop name you configured in the CloudFormation Template.
+13. Select the Security Group named after your Workshop.
+14. We will accept the rest of the defaults, but take a moment at look at the options that you can configure for your Spot Fleet
+	* Health Checks
+	* Interruption behavior
+	* Load Balancer registration
+	* EBS Optimized
+15. Click **Next** and review your settings. Click request fleet
+16. Wait until the request is fulfilled, capacity shows 2 of 2, and the status is Active.
+17. Once the workers come up, they should start processing the SQS messages automatically. Send some more stocks from the webpage.
+
+#### Evaluate the Results
+1. Check the S3 Bucket that was created by the CloudFormation template. In a few minutes you should see results start appearing the bucket. You'll see the following results files:
+	* File Description 1
+	* File Description 2 
+	* File Description N
+2. If you monitor the SQS queue for messages you should see them being picked up by the worker nodes. 
+You've completed Lab 3, Congrats!
+
+#### Extra Credit
+* Use [AWS QuickSight](https://https://quicksight.aws/) to build visualizations, perform ad-hoc analysis, and quickly get business insights from your data
+* Each job is handled fully by one worker. Maybe you could look at adding more parallelism to task scheduler.
+* Configure Auto Scaling for your Spot Fleet based on SQS Queue Depth
+
 
 <a name="lab4"></a>
 ### Lab	4 - Leverage a Fully Managed Solution using AWS Batch 
@@ -162,9 +199,9 @@ The [Jupyter Notebook](http://jupyter.org/) allows you to create and share docum
 Coming Soon!
 
 
-<a name="extra"></a>
-## Extra Credit
-* Use [AWS QuickSight](https://https://quicksight.aws/) to build visualizations, perform ad-hoc analysis, and quickly get business insights from your data
+
+
 
 <a name="cleanup"></a>
 ## Clean Up
+
