@@ -6,11 +6,11 @@ ver 0.2, namera@ , included execution id for traceability, Nov3'17
 Hedge Your Own Funds: Running Monte Carlo Simulations on EC2 Spot
 =================================================================
 
-This simulations worker script launches the Monte-Carlo simulations as described in the session's Jupiter Notebook.
+This worker script launches the Monte-Carlo simulations as described in the session's Jupiter Notebook.
 All input parameters have defaults, please see 'parser.add_argument' for details or simply append -h at the end of the execution line to
 see input parameter details.
 
-e.g. python mc_worker.py -h
+e.g. python worker.py -h
 
 Output:
 -------
@@ -23,13 +23,13 @@ ProtfolioRiskAssessment.csv - returns the risk value of multiple-socks protfolio
 Sample executions:
 ------------------
 Run simulation with default parameters: 
-python mc_worker.py 
+python worker.py 
 
 Specify a list of stocks for Portfolio Risk Assessment:
-python mc_worker.py --stocks-list IBM AMZN MSFT
+python worker.py --stocks-list IBM AMZN MSFT
 
 Specify 1,000,000 simulations to execute:
-python mc_worker.py --iterations 1000000
+python worker.py --iterations 1000000
 '''
 
 

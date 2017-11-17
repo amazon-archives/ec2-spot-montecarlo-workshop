@@ -2,8 +2,11 @@ import boto3
 import time
 import subprocess
 
-rn = 'us-east-2'
-qn = 'spotlab'
+QUEUE = 'spotlab'
+
+client_session = boto3.session.Session()
+aws_region = client_session.region_name
+
 sleepTime = 5
 
 # takes inputs, runs simulations and returns CSV output
@@ -21,7 +24,7 @@ def runSimulation(stock_symbol,short,longVa,days,iterVa,ukey,s3Bucket):
 def saveToS3(bucket_name,filename):
     s3 = boto3.client('s3')
     s3.upload_file(filename, bucket_name, filename)
-    # s3 = boto3.resource('s3', region_name=rn)
+    # s3 = boto3.resource('s3', region_name=aws_region)
     # s3.Bucket(s3Bucket).put_object(Key=file_key, Body=simData)
     
 
@@ -31,10 +34,10 @@ def saveToS3(bucket_name,filename):
 def main():
     while True:
         # Get the SQS service resource
-        sqs = boto3.resource('sqs', region_name=rn)
+        sqs = boto3.resource('sqs', region_name=aws_region)
 
         # Get the queue
-        queue = sqs.get_queue_by_name(QueueName=qn)
+        queue = sqs.get_queue_by_name(QueueName=QUEUE)
 
         MessageCount = 0
 
