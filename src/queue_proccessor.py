@@ -1,11 +1,11 @@
 import boto3
 import time
 import subprocess
-
-QUEUE = 'spotlab'
+import config
 
 client_session = boto3.session.Session()
 aws_region = client_session.region_name
+QUEUE = str(config.QUEUE)
 
 sleepTime = 5
 
