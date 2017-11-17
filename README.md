@@ -110,8 +110,10 @@ The template sets up a VPC, IAM roles, S3 bucket, and an EC2 Instance. The EC2 i
 	
 7. Click on the Output URLs for **Jupyter** and **Web Server**. Each should load a web page confirming that the environment has been deployed correctly.    
 
+	Jupyter
 	![CloudFormation Jupyter Complete](/images/jupyter.png)
-
+	
+	Web
 	![CloudFormation Web Client Complete](/images/web.png)
 
 If there was an error during the stack creation process, CloudFormation will rollback and terminate.  You can investigate and troubleshoot by looking in the Events tab.  Any errors encountered during stack creation will appear in the event log. 
