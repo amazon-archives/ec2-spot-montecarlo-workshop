@@ -23,7 +23,7 @@ def runSimulation(stock_symbol,short,longVa,days,iterVa,ukey,s3Bucket):
 def saveToS3(bucket_name,filename):
     s3 = boto3.client('s3')
     s3.upload_file(filename, bucket_name, filename)
-    # s3 = boto3.resource('s3', region_name=aws_region)
+    # s3 = boto3.resource('s3', region_name=REGION)
     # s3.Bucket(s3Bucket).put_object(Key=file_key, Body=simData)
     
 
@@ -33,7 +33,7 @@ def saveToS3(bucket_name,filename):
 def main():
     while True:
         # Get the SQS service resource
-        sqs = boto3.resource('sqs', region_name=aws_region)
+        sqs = boto3.resource('sqs', region_name=REGION)
 
         # Get the queue
         queue = sqs.get_queue_by_name(QueueName=QUEUE)
