@@ -170,14 +170,15 @@ The [Jupyter Notebook](http://jupyter.org/) allows you to create and share docum
 12. We will use User Data to bootstrap our work nodes. Cut and paste the user data [script](https://github.com/aws-samples/ec2-spot-montecarlo-workshop/blob/master/templates/spotlabworker.sh) from the git hub repo.  You will need to replace **\<REPLACE WITH YOUR SQS QUEUE NAME>** with the name of the queue you created earlier. **TODO** Improve this workflow.
 12. Under **IAM instance profile**, pull the dropdown and select the profile beginning with the workshop name you configured in the CloudFormation Template.
 13. Select the Security Group named after your Workshop.
-14. We will accept the rest of the defaults, but take a moment at look at the options that you can configure for your Spot Fleet
+14. Under Tags, Add a Tag for Name, the value should be a name to identify (e.g. Worker Node)
+15. We will accept the rest of the defaults, but take a moment at look at the options that you can configure for your Spot Fleet
 	* Health Checks
 	* Interruption behavior
 	* Load Balancer registration
 	* EBS Optimized
-15. Click **Next** and review your settings. Click request fleet
-16. Wait until the request is fulfilled, capacity shows 2 of 2, and the status is Active.
-17. Once the workers come up, they should start processing the SQS messages automatically. Send some more stocks from the webpage.
+16. Click **Next** and review your settings. Click request fleet
+17. Wait until the request is fulfilled, capacity shows 2 of 2, and the status is Active.
+18. Once the workers come up, they should start processing the SQS messages automatically. Send some more stocks from the webpage.
 
 #### Evaluate the Results
 1. Check the S3 Bucket that was created by the CloudFormation template. In a few minutes you should see results start appearing the bucket. You'll see the following results files:
