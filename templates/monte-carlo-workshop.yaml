@@ -301,7 +301,7 @@ Resources:
                 WORKSHOPDIR=/home/ec2-user/ec2-spot-montecarlo-workshop/src
 
                 # Configure Web Client
-                cp $WORKSHOPDIR/*.py $WORKSHOPDIR/web/public/static/
+                cp -rf $WORKSHOPDIR/*.py $WORKSHOPDIR/web/public/static/
                 sed -i "s_REGION_NAME"_${AWS::Region}_g" $WORKSHOPDIR/web/config.json
 
                 #Configure Jupyter Notebook Password
