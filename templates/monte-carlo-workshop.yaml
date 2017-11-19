@@ -27,7 +27,7 @@ Mappings:
 Outputs:
   Jupyter:
     Description: URL to access Jupyter in Lab 2
-    Value: !Sub http://${workstationElasticIp}:${JupyterPort}
+    Value: !Sub https://${workstationElasticIp}:8888
   WebInterface:
     Description: URL to access the Web Interface in Lab 3
     Value: !Sub http://${workstationElasticIp}
@@ -55,10 +55,6 @@ Parameters:
     AllowedPattern: '.+'
     ConstraintDescription: Must contain only alphanumeric characters.
     NoEcho: true
-  JupyterPort:
-    Default: 8888
-    Description: Leave this as 8888
-    Type: String
   SourceCidr:
     Default: 0.0.0.0/0
     Description: Optional - CIDR/IP range for instance SSH/Jupyter access - defaults to 0.0.0.0/0
@@ -293,13 +289,27 @@ Resources:
                 # aws ec2 attach-network-interface --network-interface-id $ENI_ID --instance-id $INSTANCE_ID --device-index 1
                 aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $ALLOCATION_ID
 
-                # set variables
+                # Clone the workshop code
                 cd /home/ec2-user
-                git clone https://github.com/aws-samples/ec2-spot-montecarlo-workshop
+                n=0
+                until [ $n -ge 3 ]
+                  do
+                    git clone https://github.com/aws-samples/ec2-spot-montecarlo-workshop && break
+                    n=$[$n+1]
+                    sleep 5
+                  done
                 WORKSHOPDIR=/home/ec2-user/ec2-spot-montecarlo-workshop/src
 
+                # Configure Web Client
+                cp $WORKSHOPDIR/*.py $WORKSHOPDIR/web/public/static/
+                sed -i "s_REGION_NAME"_${AWS::Region}_g" $WORKSHOPDIR/web/config.json
+
                 #Configure Jupyter Notebook Password
+                mkdir $WORKSHOPDIR/keys
+                openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /home/ec2-user/ec2-spot-montecarlo-workshop/src/keys/mykey.key -out /home/ec2-user/ec2-spot-montecarlo-workshop/src/keys/mycert.pem  -subj "/C=US/ST=CA/L=SF/O=spot/OU=workshop/CN=example.com"
                 jupyter-notebook --generate-config --allow-root
+                sed -i "s_#c.NotebookApp.certfile = ''_c.NotebookApp.certfile = u'/home/ec2-user/ec2-spot-montecarlo-workshop/src/keys/mycert.pem'_g" /root/.jupyter/jupyter_notebook_config.py
+                sed -i "s_#c.NotebookApp.keyfile = ''_c.NotebookApp.keyfile = u'/home/ec2-user/ec2-spot-montecarlo-workshop/src/keys/mykey.key'_g" /root/.jupyter/jupyter_notebook_config.py
                 sed -i "s/#c.NotebookApp.ip = 'localhost'/c.NotebookApp.ip = '*'/g" /root/.jupyter/jupyter_notebook_config.py
                 PASSWORD=${JupyterPassword}
                 python -c "from notebook.auth import passwd;print(passwd('$PASSWORD') if '$PASSWORD' != '' else 'sha1:c6bd96fb0824:6654e9eabfc54d0b3d0715ddf9561bed18e09b82')" > $WORKSHOPDIR/password_temp
@@ -311,8 +321,7 @@ Resources:
                 #Start Web and Jupyter
                 cd $WORKSHOPDIR
                 node web/bin/www > stdout.txt 2>&1 &
-                cd /
-                jupyter notebook --allow-root --no-browser --port=${JupyterPort} &
+                jupyter notebook --allow-root --no-browser &
                 aws ec2 create-tags --resources $INSTANCE_ID --tags Key=Name,Value=montecarlo-workshop
 
                 /opt/aws/bin/cfn-signal -s true -i $INSTANCE_ID "${spotFleetWaitConditionHandle}"

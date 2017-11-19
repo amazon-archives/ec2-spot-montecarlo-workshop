@@ -1,6 +1,6 @@
 # Hedge Your Own Funds: Run Monte Carlo Simulations on Amazon EC2 Spot Fleets: Lab Guide
 
-* [Overview](#overview)
+* [Introduction](#intro)
 	* [Requirements](#req)
 	* [Lab Overview](#labs)
 	* [Conventions](#conventions)
@@ -10,12 +10,11 @@
 	* [Lab 2 - Explore the Algorithmic Trading Concepts with Jupyter ](#lab2)
 	* [Lab 3 - Deploy an Automated Trading Strategy with EC2 Spot Fleet](#lab3)
 	* [Lab	4 - Leverage a Fully Managed Solution using AWS Batch](#lab4)
-* [Extra Credit](#extra)
 * [Clean Up](#cleanup)
 
-<a name="overview"></a>
-## Overview:  
-Algorithmic trading, or algo-trading is the process of using algorthims for placing a stock trade based on a set of perceived market conditions. These algorthims are based on price, quantity or other mathematical model without the risk of human emotion influencing the buy or sell action. This workshop will walk your through some of the basic tools and concepts that algorithmic traders employ to build fully automated trading systems. 
+<a name="intro"></a>
+## Introduction:  
+Algorithmic trading, or algo-trading is the process of using algorithms for placing a stock trade based on a set of perceived market conditions. These algorithms are based on price, quantity or other mathematical model without the risk of human emotion influencing the buy or sell action. This workshop will walk your through some of the basic tools and concepts that algorithmic traders employ to build fully automated trading systems. 
 
 Monte Carlo Simulations involve repeated random sampling to model the probability of a complex problem that is difficult to predict using other methods due to the nature of the variables involved. We will use Monte Carlo Simulations to simulate and predict future stock movement by repeatedly sampling random stock values based on past results. 
 
@@ -28,7 +27,7 @@ If you'd like to learn more: [Basics of Algorithmic Trading: Concepts and Exampl
 * AWS account - if you don't have one, it's easy and free to [create one](https://aws.amazon.com/)
 * AWS IAM account with elevated privileges allowing you to interact with CloudFormation, IAM, EC2, SQS, and CloudWatch Logs
 * A workstation or laptop with an ssh client installed, such as [putty](http://www.putty.org/) on Windows or terminal or iterm on Mac
-* Familiarity with Python, [Jupyter](http://jupyter.org/), AWS, and basic understanding of [algorthimic stock trading](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp)  - not required but a bonus
+* Familiarity with Python, [Jupyter](http://jupyter.org/), AWS, and basic understanding of [algorithmic stock trading](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp)  - not required but a bonus
 
 <a name="Labs"></a>
 ### Lab Overview:  
@@ -132,17 +131,24 @@ The [Jupyter Notebook](http://jupyter.org/) allows you to create and share docum
 <a name="lab3"></a>
 ### Lab 3 - Deploy an Automated Trading Strategy on EC2 Spot Fleet:
 
+Now that we understand the basics of our trading strategy, lets get our hands dirty building out the batch processing pipeline. 
+
 #### Create the SQS Queue
+We will start by creating a managed message queue to store the batch job parameters.
+
 1. quick create an sqs standard queue
 2. record the SQS Name and URL for later
 3. Edit IAM Instance Policy on the EC2 instance. Add sqs:* 
+
 #### Configure the Web Client
-4. Launch Web Site
-5. click configuration
-6. Paste in the SQS URL
-7. Paste S3 resultsBucket name from CFN Output
-8. Paste AWS Region from CFN Output - V2 maybe we populate this automagically
-9. Click Save
+The CloudFormation template deployed a web server that will serve as the user interface. We need to configure it with our SQS queue
+
+1. Launch Web Site
+2. click configuration
+3. Paste in the SQS URL
+4. Paste S3 resultsBucket name from CFN Output
+5. Paste AWS Region from CFN Output - V2 maybe we populate this automagically
+6. Click Save
 
 #### Configure our Simulation 
 10. click home on web page
@@ -153,7 +159,7 @@ The [Jupyter Notebook](http://jupyter.org/) allows you to create and share docum
 	15. Trading Days  = 252 (one year)
 	16. Iterations 1000
 	17. Click Submit (You can also preview the json if you want to see the message body
-18. You can view the json message in the SQS Queue.
+18. You can view the JSON message in the SQS Queue.
 
 #### Create the Spot Worker Fleet
 1. From the Management Console, Click **Services**, and select EC2.
@@ -205,4 +211,11 @@ Coming Soon!
 
 <a name="cleanup"></a>
 ## Clean Up
+Hopefully you've enjoyed the workshop and learned a few new things. Now follow these steps to make sure everything is cleaned up.
+
+1. In the EC2 Console > Spot Requests, click **Cancel Spot request** under **Actions**. Make sure **Terminate instances** is checked.
+2. In the SQS Console, delete the queue that you created earlier. This is located under **Queue Actions**.
+3. In the S3 Console, locate the resultsBucket that was created for your workshop. Click on the bucket and select **Empty bucket**. You will need to copy and paste the bucket name in to confirm the aciton. 
+4. In the CloudFormation template, select the workshop stack and select **Actions** and then **Delete stack**.
+
 
