@@ -25,7 +25,7 @@ If you'd like to learn more: [Basics of Algorithmic Trading: Concepts and Exampl
 <a name="req"></a>
 ### Requirements:  
 * AWS account - if you don't have one, it's easy and free to [create one](https://aws.amazon.com/)
-* AWS IAM account with elevated privileges allowing you to interact with CloudFormation, IAM, EC2, SQS, and CloudWatch Logs
+* AWS IAM account with elevated privileges allowing you to interact with CloudFormation, IAM, EC2, SQS, and AWS Batch
 * A workstation or laptop with an ssh client installed, such as [putty](http://www.putty.org/) on Windows or terminal or iterm on Mac
 * Familiarity with Python, [Jupyter](http://jupyter.org/), AWS, and basic understanding of [algorithmic stock trading](http://www.investopedia.com/articles/active-trading/101014/basics-algorithmic-trading-concepts-and-examples.asp)  - not required but a bonus
 
@@ -79,7 +79,7 @@ For your convenience, we provide a CloudFormation template to stand up the core 
 The template sets up a VPC, IAM roles, S3 bucket, and an EC2 Instance. The EC2 instance will run a Jupyter Notebook which we will leverage in Lab 2 and a small website that we will use in Lab 3. The idea is to provide a contained environment, so as not to interfere with any other provisioned resources in your account.  In order to demonstrate cost optimization strategies, the EC2 Instance is an [EC2 Spot Instance](https://aws.amazon.com/ec2/spot/) deployed by [Spot Fleet](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet.html).  If you are new to [CloudFormation](https://aws.amazon.com/cloudformation/), take the opportunity to review the [template](https://github.com/awslabs/spot-motecarlo-workshop/blob/master/lab-1-setup/cfn-templates/spot-montecarlo-workshop.yaml) during stack creation.
 
 
-*Prior to launching a stack, be aware that a few of the resources launched need to be manually deleted when the workshop is over. When finished working, please review the "Workshop Cleanup" section to learn what manual teardown is required by you.*
+>**Important:** Prior to launching a stack, be aware that a few of the resources launched need to be manually deleted when the workshop is over. When finished working, please review the "Workshop Cleanup" section to learn what manual teardown is required by you.
 
 1. Click on one of these CloudFormation templates that matches the region you created your keypair in to launch your stack:  
 
@@ -95,37 +95,51 @@ The template sets up a VPC, IAM roles, S3 bucket, and an EC2 Instance. The EC2 i
 
 2. The template will automatically bring you to the CloudFormation Dashboard and start the stack creation process in the specified region. Click **Next** on the page it brings you to. Do not change anything on the first screen.
 
+	First Screen
 	![CloudFormation PARAMETERS](images/cf-initial.png)
-**IMPORTANT**  
-	*On the parameter selection page of launching your CloudFormation stack, make sure to choose the key pair that you created in step 1. If you don't see a key pair to select, check your region and try again.*
-![CloudFormation PARAMETERS](images/cf-params.png)
+	
+	Parameters Screen
+	![CloudFormation PARAMETERS](images/cf-params.png)
   
-3. Select a password to use for the Jupyter Notebook. You will use this password in Lab 2. After you've selected your ssh key pair, click **Next**. 
-4. On the **Options** page, accept all defaults - you don't need to make any changes. Click **Next**. 
-5. On the **Review** page, under **Capabilities** check the box next to **"I acknowledge that AWS CloudFormation might create IAM resources."** and click **Create**. Your CloudFormation stack is now being created.
-6. Periodically check on the stack creation process in the CloudFormation Dashboard.  Your stack should show status **CREATE\_COMPLETE** in roughly 10-15 minutes. In the Outputs tab, take note of the **Jupyter** and **Web Server** values; you will need these in the next two labs. 
+3. Select a password to use for the Jupyter Notebook. You will use this password in Lab 2. 
+4. The default port for the Jupyter Notebook is 8888. Some corporate firewalls and VPNs will block this port. You can change the **JupyterPort** to 443 to get around this. 
+5. Select your ssh key. 
+>**Important:** On the parameter selection page of launching your CloudFormation stack, make sure to choose the key pair that you created in step 1. If you don't see a key pair to select, check your region and try again.
+6. After you've selected your ssh key pair, click **Next**.
+7. On the **Options** page, accept all defaults - you don't need to make any changes. Click **Next**. 
+8. On the **Review** page, under **Capabilities** check the box next to **"I acknowledge that AWS CloudFormation might create IAM resources."** and click **Create**. Your CloudFormation stack is now being created.
+9. Periodically check on the stack creation process in the CloudFormation Dashboard.  Your stack should show status **CREATE\_COMPLETE** in roughly 10-15 minutes. In the Outputs tab, take note of the **Jupyter** and **Web Server** values; you will need these in the next two labs. 
 	
-	![CloudFormation Complete](/images/cf-complete.png)
+	![CloudFormation Complete](images/cf-complete.png)
 	
-7. Click on the Output URLs for **Jupyter** and **Web Server**. Each should load a web page confirming that the environment has been deployed correctly. We have vreated a self-signed certificate for the Jupyter Notebook. You will see messages about an unsafe connection. It is safe to ignore these warnings and continue. The steps will differ depending on your browser.
+10. Click on the Output URLs for **Jupyter** and **Web Server**. Each should load a web page confirming that the environment has been deployed correctly. We have created a self-signed certificate for the Jupyter Notebook. You will see messages about an unsafe connection. It is safe to ignore these warnings and continue. The steps will differ depending on your browser.
 
+	Certificate Warning
+	![Certificate Warning](images/cert_warning.png)
+	
 	Jupyter
-	![CloudFormation Jupyter Complete](/images/jupyter.png)
+	![CloudFormation Jupyter Complete](images/jupyter.png)
 	
 	Web
-	![CloudFormation Web Client Complete](/images/web.png)
+	![CloudFormation Web Client Complete](images/web.png)
 
 If there was an error during the stack creation process, CloudFormation will rollback and terminate.  You can investigate and troubleshoot by looking in the Events tab.  Any errors encountered during stack creation will appear in the event log. 
-    
+
+**You've completed Lab 1, Congrats!**    
 
 <a name="lab2"></a>
 ### Lab 2 - Explore the Algorithmic Trading Concepts with Jupyter:
 
 The [Jupyter Notebook](http://jupyter.org/) allows you to create and share documents that contain live code, equations, visualizations and narrative text.
 
-1. Log into the Jupyter Notebook using the **Jupyter** URL output from the CloudFormation Template using the password you configured when building the stack.
+1. Log into the Jupyter Notebook using the **Jupyter** URL output from the CloudFormation Template using the password you configured when building the stack.  We have created a self-signed certificate for the Jupyter Notebook. You will see messages about an unsafe connection. It is safe to ignore these warnings and continue. The steps will differ depending on your browser.
+
+	![Certificate Warning](images/cert_warning.png)
+
 2. Click on the notebook named *monte-carlo-workshop.ipynb* and it should open in a new tab.
 3. Follow the instructions in the Notebook to complete Lab 2. If you're new to Jupyter, you press shift-enter to run code and/or proceed to the next section. When you're done with the Notebook, return here and we'll take the concepts we learned in this lab and build our own automated pipeline.
+
+**You've completed Lab 2, Congrats!**
 
 
 <a name="lab3"></a>
@@ -136,63 +150,118 @@ Now that we understand the basics of our trading strategy, lets get our hands di
 #### Create the SQS Queue
 We will start by creating a managed message queue to store the batch job parameters.
 
-1. quick create an sqs standard queue
-2. record the SQS Name and URL for later
-3. Edit IAM Instance Policy on the EC2 instance. Add sqs:* 
+1. Go to the SQS Console, if you haven't used the service in this region, click **Get Started Now**. Otherwise, click **Create New Queue**.
+2. Name your queue *"Workshop"*. Select **Standard Queue**. Click **Quick-Create Queue**.
+	
+	![SQS Creation](images/sqs_create.png)
+
+>For regions that don't yet support FIFO queues, the console may look different than shown. Just name the queue and accept the defaults.
+
+3. Save the queue **Name** and **URL** for later use.
+	
+	![SQS Info](images/sqs_info.png)
+	
+
+#### Edit the EC2 Instance Profile
+Our EC2 instances run with an Instance Profile that contains an IAM role giving the instance permissions to interact with other AWS services. We need to edit the associated policy with permissions to access the SQS service.
+
+1. Go to the EC2 Console.
+2. Under **Instances**, select the instance named *montecarlo-workshop*.
+3. Scroll down and select the **IAM Role**.
+4. You should see two attached policies. One will be an inline policy named after the workshop. Click the arrow beside the policy and click **Edit policy**.
+
+	![IAM Role](images/iam_role.png)
+
+5. Under *Actions*, place a comma after `"cloudformation:Describe*"`.
+6. Add a new entry `"sqs:*"`which will give permission for all SQS actions. Click **Validate Policy**.
+
+	![IAM Validate](images/iam_validate.png)
+
+7. If the policy is valid, click **Save**.
 
 #### Configure the Web Client
 The CloudFormation template deployed a web server that will serve as the user interface. We need to configure it with our SQS queue
 
-1. Launch Web Site
-2. click configuration
-3. Paste in the SQS URL
-4. Paste S3 resultsBucket name from CFN Output
-5. Paste AWS Region from CFN Output - V2 maybe we populate this automagically
-6. Click Save
+1. Launch Web Site using the URL from the CloudFormation output.
+2. Click **Configuration**
+3. Configure the **SQS URL**, **S3 Bucket Name**, and **AWS Region** using the output values from the CloudFormation stack.
+
+	![Web Config](images/web_config.png)
+
+4. Click **Submit** and then click **Home** to return to the home page.
 
 #### Configure our Simulation 
-10. click home on web page
-11. Enter you simulation details. You can select whatever values you'd like, but too large of an iteration count, may take a long time to complete. We recommend the following configuration.
-	12. Stock Symbol (e.g. AMZN)
-	13. Short Window = 10 days
-	14. Long Window = 30 days
-	15. Trading Days  = 252 (one year)
-	16. Iterations 1000
-	17. Click Submit (You can also preview the json if you want to see the message body
-18. You can view the JSON message in the SQS Queue.
+1. Enter you simulation details. You can select whatever values you'd like, but too large of an iteration count, may take a long time to complete. We recommend the following configuration.
+	* Stock Symbol (e.g. AMZN)
+	* Short Window = 40 days
+	* Long Window = 100 days
+	* Trading Days  = 1260 (5 years)
+	* Iterations = 2000
+	* Preview Only = *unchecked* - You can use this to see the json message placed on the queue. 
+
+#### View the messages in SQS
+1. Go to the SQS Console and select your queue.
+2. Under **Queue Actions**, select **View/Delete Messages**. 
+3. Click on **Start Polling for Messages**
+4. You should see the message that was created by the web client. Explore the message attributes to see what we will be passing to the worker script
+5. Now that we have messages on the queue, lets spin up some workers on EC2 spot instances.
 
 #### Create the Spot Worker Fleet
-1. From the Management Console, Click **Services**, and select EC2.
-2. Select Spot Requests and click **Request Spot Instances**.
+1. From the EC2 Console, select **Spot Requests** and click **Request Spot Instances**.
 3. Select **Request and Maintain** to create a fleet of Spot Instances.
 4. For **Target Capacity**, type **2**
 5. Leave the Amazon Linux AMI as the Default.
-6. Each EC2 Instance type and family has it's own independent Spot Market price. Under **Instance Types**, Click **Select** and pick the c3.xlarge, c3.2xlarge, and c4.xlarge to diversify our fleet. Click **Select** again to return to the previous screen.
+6. Each EC2 Instance type and family has it's own independent Spot Market price. Under **Instance Types**, Click **Select** and pick the *c3.xlarge*, *c3.2xlarge*, and *c4.xlarge* to diversify our fleet. Click **Select** again to return to the previous screen.
 7.  For **Allocation Strategy**, pick **Diversified**.
 8. For **Network**, pick the VPC we created for the Spot Monte Carlo Workshop.
-9. Under Availability Zone, check the box next to the first two AZs. The Network Subnet should auto-populate. If the subnet dropdown box says "No subnets in this zone", uncheck and select another AZ
+9. Under Availability Zone, check the box next to the first two AZs. The Network Subnet should auto-populate. If the subnet dropdown box says *"No subnets in this zone*, uncheck and select another AZ
 10.  Select **Use automated bidding**
 11. Click **Next**
-12. We will use User Data to bootstrap our work nodes. Cut and paste the user data [script](https://github.com/aws-samples/ec2-spot-montecarlo-workshop/blob/master/templates/spotlabworker.sh) from the git hub repo.  You will need to replace **\<REPLACE WITH YOUR SQS QUEUE NAME>** with the name of the queue you created earlier. **TODO** Improve this workflow.
-12. Under **IAM instance profile**, pull the dropdown and select the profile beginning with the workshop name you configured in the CloudFormation Template.
+12. We will use User Data to bootstrap our work nodes. Copy and paste the [spotlabworker.sh](https://github.com/aws-samples/ec2-spot-montecarlo-workshop/blob/master/templates/spotlabworker.sh) code from the repo We recommend using grabbing the latest code from the repo, but you can review the script below.
+
+	<pre>
+	#!/bin/bash
+	# Install Dependencies
+	yum -y install git python-numpy python-matplotlib	python-scipy
+	pip install pandas-datareader
+	pip install scipy 
+	pip install boto3
+	
+	#Populate Variables
+	REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}'`
+	mkdir /home/ec2-user/spotlabworker
+	chown ec2-user:ec2-user /home/ec2-user/spotlabworker
+	cd /home/ec2-user/spotlabworker
+	WEBURL=$(aws cloudformation --region $REGION describe-stacks --query 'Stacks[0].Outputs[?OutputKey==`WebInterface`].OutputValue' --output text)
+	
+	#Download the worker code
+	wget $WEBURL/static/queue_processor.py
+	wget $WEBURL/static/worker.py
+	
+	#Configure the worker with the proper inputs
+	echo "QUEUE = 'Workshop'" > config.py
+	echo "REGION = '$REGION'" >> config.py
+	
+	#Start the worker processor
+	python /home/ec2-user/spotlabworker/queue_processor.py > stdout.txt 2>&1
+	</pre>  
+12. Under **Tags**, Enter *Name* for **Key**. Enter **WorkerNode** for *Value*.
+13. Under **IAM instance profile**, pull the dropdown and select the profile beginning with the workshop name you configured in the CloudFormation Template.
 13. Select the Security Group named after your Workshop.
-14. Under Tags, Add a Tag for Name, the value should be a name to identify (e.g. Worker Node)
-15. We will accept the rest of the defaults, but take a moment at look at the options that you can configure for your Spot Fleet
-	* Health Checks
-	* Interruption behavior
-	* Load Balancer registration
-	* EBS Optimized
-16. Click **Next** and review your settings. Click request fleet
-17. Wait until the request is fulfilled, capacity shows 2 of 2, and the status is Active.
-18. Once the workers come up, they should start processing the SQS messages automatically. Send some more stocks from the webpage.
+14. We will accept the rest of the defaults, but take a moment at look at the options that you can configure for your Spot Fleet
+	* **Health Checks**
+	* **Interruption behavior**
+	* **Load Balancer registration**
+	* **EBS Optimized**
+15. Click **Review**, review your settings, and then click **Launch**.
+16. Wait until the request is fulfilled, capacity shows the specified number of Spot instances, and the status is Active.
+17. Once the workers come up, they should start processing the SQS messages automatically. Feel free to create some more jobs from the webpage.
 
 #### Evaluate the Results
-1. Check the S3 Bucket that was created by the CloudFormation template. In a few minutes you should see results start appearing the bucket. You'll see the following results files:
-	* File Description 1
-	* File Description 2 
-	* File Description N
+1. Check your S3 Bucket. In a few minutes you should see results start appearing the bucket. 
 2. If you monitor the SQS queue for messages you should see them being picked up by the worker nodes. 
-You've completed Lab 3, Congrats!
+
+**You've completed Lab 3, Congrats!**
 
 #### Extra Credit
 * Use [AWS QuickSight](https://https://quicksight.aws/) to build visualizations, perform ad-hoc analysis, and quickly get business insights from your data
@@ -206,9 +275,6 @@ You've completed Lab 3, Congrats!
 Coming Soon!
 
 
-
-
-
 <a name="cleanup"></a>
 ## Clean Up
 Hopefully you've enjoyed the workshop and learned a few new things. Now follow these steps to make sure everything is cleaned up.
@@ -217,5 +283,13 @@ Hopefully you've enjoyed the workshop and learned a few new things. Now follow t
 2. In the SQS Console, delete the queue that you created earlier. This is located under **Queue Actions**.
 3. In the S3 Console, locate the resultsBucket that was created for your workshop. Click on the bucket and select **Empty bucket**. You will need to copy and paste the bucket name in to confirm the aciton. 
 4. In the CloudFormation template, select the workshop stack and select **Actions** and then **Delete stack**.
+
+<a name="appendix"></a>
+##Appendix
+
+### Estimated Costs
+The estimated cost for running this 2.5 hour workshop will be less than $5.
+
+### Learning Resources:
 
 

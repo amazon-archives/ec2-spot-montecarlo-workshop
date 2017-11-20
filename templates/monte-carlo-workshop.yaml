@@ -53,6 +53,8 @@ Parameters:
     Description: This password will be used to connect to the Jupyter Notebook Lab 2. Must contail only alphanumeric characters, cannot be empty
     Type: String
     AllowedPattern: '.+'
+    NoEcho: true
+
   JupyterPort:
     Description: Port to connect to Jupyter Notebook. Leave as 8888 unless you have Firewall/VPN issues.
     Default: 8888
