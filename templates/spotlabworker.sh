@@ -10,8 +10,10 @@ mkdir /home/ec2-user/spotlabworker
 chown ec2-user:ec2-user /home/ec2-user/spotlabworker
 cd /home/ec2-user/spotlabworker
 
-wget https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/queue_processor.py
-wget https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/worker.py
+WEBURL=$(aws cloudformation --region $REGION describe-stacks --query 'Stacks[0].Outputs[?OutputKey==`WebInterface`].OutputValue' --output text)
+
+wget $WEBURL/static/queue_processor.py
+wget $WEBURL/static/worker.py
 echo "QUEUE = '<REPLACE WITH YOUR SQS QUEUE NAME>'" > config.py
 echo "REGION = '$REGION'" >> config.py
 aws configure set default.region $REGION

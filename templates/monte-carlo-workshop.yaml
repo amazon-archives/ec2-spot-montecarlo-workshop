@@ -27,7 +27,7 @@ Mappings:
 Outputs:
   Jupyter:
     Description: URL to access Jupyter in Lab 2
-    Value: !Sub https://${workstationElasticIp}:8888
+    Value: !Sub https://${workstationElasticIp}:${JupyterPort}
   WebInterface:
     Description: URL to access the Web Interface in Lab 3
     Value: !Sub http://${workstationElasticIp}
@@ -53,8 +53,10 @@ Parameters:
     Description: This password will be used to connect to the Jupyter Notebook Lab 2. Must contail only alphanumeric characters, cannot be empty
     Type: String
     AllowedPattern: '.+'
-    ConstraintDescription: Must contain only alphanumeric characters.
-    NoEcho: true
+  JupyterPort:
+    Description: Port to connect to Jupyter Notebook. Leave as 8888 unless you have Firewall/VPN issues.
+    Default: 8888
+    Type: String
   SourceCidr:
     Default: 0.0.0.0/0
     Description: Optional - CIDR/IP range for instance SSH/Jupyter access - defaults to 0.0.0.0/0
@@ -227,10 +229,13 @@ Resources:
         ToPort: 22
       - CidrIp:
           Ref: SourceCidr
-        FromPort: 8888
+        FromPort: 
+          Ref: JupyterPort
         IpProtocol: tcp
-        ToPort: 8888
-      - CidrIp: 0.0.0.0/0
+        ToPort: 
+          Ref: JupyterPort
+      - CidrIp:
+          Ref: SourceCidr
         FromPort: 80
         IpProtocol: tcp
         ToPort: 80
@@ -315,7 +320,7 @@ Resources:
                 #Start Web and Jupyter
                 cd $WORKSHOPDIR
                 node web/bin/www > stdout.txt 2>&1 &
-                jupyter notebook --allow-root --no-browser &
+                jupyter notebook --allow-root --no-browser --port ${JupyterPort} &
                 aws ec2 create-tags --resources $INSTANCE_ID --tags Key=Name,Value=montecarlo-workshop
 
                 /opt/aws/bin/cfn-signal -s true -i $INSTANCE_ID "${spotFleetWaitConditionHandle}"
@@ -372,6 +377,7 @@ Resources:
                   - ec2:AttachNetworkInterface
                   - ec2:CreateTags
                   - ec2:AssociateAddress
+                  - cloudformation:Describe*
       Path: /
     Type: AWS::IAM::Role
   spotFleetRole:
