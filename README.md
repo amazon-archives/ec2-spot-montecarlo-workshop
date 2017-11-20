@@ -107,7 +107,7 @@ The template sets up a VPC, IAM roles, S3 bucket, and an EC2 Instance. The EC2 i
 	
 	![CloudFormation Complete](/images/cf-complete.png)
 	
-7. Click on the Output URLs for **Jupyter** and **Web Server**. Each should load a web page confirming that the environment has been deployed correctly.    
+7. Click on the Output URLs for **Jupyter** and **Web Server**. Each should load a web page confirming that the environment has been deployed correctly. We have vreated a self-signed certificate for the Jupyter Notebook. You will see messages about an unsafe connection. It is safe to ignore these warnings and continue. The steps will differ depending on your browser.
 
 	Jupyter
 	![CloudFormation Jupyter Complete](/images/jupyter.png)

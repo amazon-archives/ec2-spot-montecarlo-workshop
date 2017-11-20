@@ -271,6 +271,7 @@ Resources:
           UserData:
              Fn::Base64: !Sub | 
                 #!/bin/bash
+
                 # Update and Install dependencies
                 curl --silent --location https://rpm.nodesource.com/setup_6.x | bash -                          
                 yum -y --security update
@@ -281,28 +282,14 @@ Resources:
                 aws configure set default.region ${AWS::Region}
                 start amazon-ssm-agent
 
-                #Assign Elastic IP
-                INSTANCE_ID=$(curl 169.254.169.254/latest/meta-data/instance-id 2>/dev/null)
-                echo $INSTANCE_ID
-                ENI_ID=${workstationElasticNetworkInterface}
-                ALLOCATION_ID=${workstationElasticIp.AllocationId}
-                # aws ec2 attach-network-interface --network-interface-id $ENI_ID --instance-id $INSTANCE_ID --device-index 1
-                aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $ALLOCATION_ID
-
                 # Clone the workshop code
                 cd /home/ec2-user
-                n=0
-                until [ $n -ge 3 ]
-                  do
-                    git clone https://github.com/aws-samples/ec2-spot-montecarlo-workshop && break
-                    n=$[$n+1]
-                    sleep 5
-                  done
+                git clone https://github.com/aws-samples/ec2-spot-montecarlo-workshop && break
                 WORKSHOPDIR=/home/ec2-user/ec2-spot-montecarlo-workshop/src
 
                 # Configure Web Client
                 cp -rf $WORKSHOPDIR/*.py $WORKSHOPDIR/web/public/static/
-                sed -i "s_REGION_NAME"_${AWS::Region}_g" $WORKSHOPDIR/web/config.json
+                sed -i "s/REGION_NAME/${AWS::Region}/g" $WORKSHOPDIR/web/config.json
 
                 #Configure Jupyter Notebook Password
                 mkdir $WORKSHOPDIR/keys
@@ -317,6 +304,13 @@ Resources:
                 cp /root/.jupyter/jupyter_notebook_config.py /home/ec2-user/.jupyter/jupyter_notebook_config.py
                 chown ec2-user:ec2-user $WORKSHOPDIR
                 rm $WORKSHOPDIR/password_temp
+
+                #Assign Elastic IP
+                INSTANCE_ID=$(curl 169.254.169.254/latest/meta-data/instance-id 2>/dev/null)
+                echo $INSTANCE_ID
+                ENI_ID=${workstationElasticNetworkInterface}
+                ALLOCATION_ID=${workstationElasticIp.AllocationId}
+                aws ec2 associate-address --instance-id $INSTANCE_ID --allocation-id $ALLOCATION_ID
 
                 #Start Web and Jupyter
                 cd $WORKSHOPDIR
