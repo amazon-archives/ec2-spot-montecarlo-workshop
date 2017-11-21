@@ -1,10 +1,15 @@
 import boto3
 import time
 import subprocess
-import config
+import argparse
 
-REGION = str(config.REGION)
-QUEUE = str(config.QUEUE)
+session = boto3.session.Session()
+REGION = session.region_name
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('--queue', dest='queue',default='workshop', help='Amazon SQS')
+args = parser.parse_args()
+QUEUE = args.queue
+
 
 sleepTime = 5
 

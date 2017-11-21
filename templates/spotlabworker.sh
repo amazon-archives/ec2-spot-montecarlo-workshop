@@ -19,10 +19,10 @@
 	wget $WEBURL/static/queue_processor.py
 	wget $WEBURL/static/worker.py
 	
-	echo "Configuring worker inputs"
-    echo "QUEUE = 'Workshop'" > config.py
-	echo "REGION = '$REGION'" >> config.py
-	echo "Debug: "$(config.py)
+#	echo "Configuring worker inputs"
+#    echo "QUEUE = 'Workshop'" > config.py
+#	echo "REGION = '$REGION'" >> config.py
+#	echo "Debug: "$(config.py)
 
 	echo 'Starting the worker processor'
 	python /home/ec2-user/spotlabworker/queue_processor.py > stdout.txt 2>&1
