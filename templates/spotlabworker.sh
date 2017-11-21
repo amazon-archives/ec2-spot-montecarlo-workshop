@@ -25,4 +25,4 @@
 #	echo "Debug: "$(config.py)
 
 	echo 'Starting the worker processor'
-	python /home/ec2-user/spotlabworker/queue_processor.py > stdout.txt 2>&1
+	python /home/ec2-user/spotlabworker/queue_processor.py --region $REGION> stdout.txt 2>&1

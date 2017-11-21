@@ -2,13 +2,20 @@ import boto3
 import time
 import subprocess
 import argparse
+import os
 
-session = boto3.session.Session()
-REGION = session.region_name
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--queue', dest='queue',default='workshop', help='Amazon SQS')
+parser.add_argument('--region', dest='region',default=None, help='Region')
 args = parser.parse_args()
 QUEUE = args.queue
+REGION = args.region
+
+try:
+    if REGION is None:
+        REGION = os.getenv("REGION")
+except:
+    raise "Must pass region as environment variable or argument"
 
 
 sleepTime = 5
