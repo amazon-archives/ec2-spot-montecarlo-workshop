@@ -365,6 +365,7 @@ Resources:
           Principal:
             Service:
             - ec2.amazonaws.com
+            - ecs-tasks.amazonaws.com
         Version: 2012-10-17
       ManagedPolicyArns:
       - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
@@ -380,6 +381,7 @@ Resources:
                   - ec2:CreateTags
                   - ec2:AssociateAddress
                   - cloudformation:Describe*
+                  - logs:*
       Path: /
     Type: AWS::IAM::Role
   spotFleetRole:
