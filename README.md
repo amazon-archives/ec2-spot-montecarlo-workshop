@@ -11,6 +11,7 @@
 	* [Lab 3 - Deploy an Automated Trading Strategy with EC2 Spot Fleet](#lab3)
 	* [Lab	4 - Leverage a Fully Managed Solution using AWS Batch](#lab4)
 * [Clean Up](#cleanup)
+* [Appendix](#appendix)
 
 <a name="intro"></a>
 ## Introduction:  
@@ -142,9 +143,7 @@ If there was an error during the stack creation process, CloudFormation will rol
 
 The [Jupyter Notebook](http://jupyter.org/) allows you to create and share documents that contain live code, equations, visualizations and narrative text.
 
-1. Log into the Jupyter Notebook using the **Jupyter** URL output from the CloudFormation Template using the password you configured when building the stack.  We have created a self-signed certificate for the Jupyter Notebook. You will see messages about an unsafe connection. It is safe to ignore these warnings and continue. The steps will differ depending on your browser.
-
-	![Certificate Warning](images/cert_warning.png)
+1. Log into the Jupyter Notebook using the **Jupyter** URL output from the CloudFormation Template using the password you configured when building the stack. 
 
 2. Click on the notebook named *monte-carlo-workshop.ipynb* and it should open in a new tab.
 3. Follow the instructions in the Notebook to complete Lab 2. If you're new to Jupyter, you press shift-enter to run code and/or proceed to the next section. When you're done with the Notebook, return here and we'll take the concepts we learned in this lab and build our own automated pipeline.
@@ -185,7 +184,7 @@ Our EC2 instances run with an Instance Profile that contains an IAM role giving 
 
 	![IAM Role](images/iam_role.png)
 
-5. Under *Actions*, place a comma after `"cloudformation:Describe*"`.
+5. Under *Actions*, place a comma after the last action (e.g. `"logs:*"`).
 6. Add a new entry `"sqs:*"`which will give permission for all SQS actions. Click **Validate Policy**.
 
 	![IAM Validate](images/iam_validate.png)
@@ -229,36 +228,36 @@ The CloudFormation template deployed a web server that will serve as the user in
 8. For **Network**, pick the VPC we created for the Spot Monte Carlo Workshop.
 9. Under Availability Zone, check the box next to the first two AZs. The Network Subnet should auto-populate. If the subnet dropdown box says *"No subnets in this zone*, uncheck and select another AZ
 10.  Select **Use automated bidding**
+	![Spot Request](images/request_spot_configuration.png)
 11. Click **Next**
 12. We will use User Data to bootstrap our work nodes. Copy and paste the [spotlabworker.sh](https://github.com/aws-samples/ec2-spot-montecarlo-workshop/blob/master/templates/spotlabworker.sh) code from the repo We recommend using grabbing the latest code from the repo, but you can review the script below.
 
 	<pre>
 	#!/bin/bash
 	# Install Dependencies
-	yum -y install git python-numpy python-matplotlib	python-scipy
+	yum -y install git python-numpy python-matplotlib python-scipy
 	pip install pandas-datareader
 	pip install scipy 
 	pip install boto3
 	
 	#Populate Variables
+    echo 'Populating Variables'
 	REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}'`
 	mkdir /home/ec2-user/spotlabworker
 	chown ec2-user:ec2-user /home/ec2-user/spotlabworker
 	cd /home/ec2-user/spotlabworker
 	WEBURL=$(aws cloudformation --region $REGION describe-stacks --query 'Stacks[0].Outputs[?OutputKey==`WebInterface`].OutputValue' --output text)
-	
-	#Download the worker code
+	echo 'Region is '$REGION
+    echo 'URL is '$WEBURL
+
+    echo "Downloading worker code"
 	wget $WEBURL/static/queue_processor.py
 	wget $WEBURL/static/worker.py
 	
-	#Configure the worker with the proper inputs
-	echo "QUEUE = 'Workshop'" > config.py
-	echo "REGION = '$REGION'" >> config.py
-	
-	#Start the worker processor
-	python /home/ec2-user/spotlabworker/queue_processor.py > stdout.txt 2>&1
+	echo 'Starting the worker processor'
+	python /home/ec2-user/spotlabworker/queue_processor.py --region $REGION> stdout.txt 2>&1
 	</pre>  
-12. Under **Tags**, Enter *Name* for **Key**. Enter **WorkerNode** for *Value*.
+12. Under **Tags**, Enter **Name** for *Key*. Enter **WorkerNode** for *Value*.
 13. Under **IAM instance profile**, pull the dropdown and select the profile beginning with the workshop name you configured in the CloudFormation Template.
 13. Select the Security Group named after your Workshop.
 14. We will accept the rest of the defaults, but take a moment at look at the options that you can configure for your Spot Fleet
@@ -266,13 +265,52 @@ The CloudFormation template deployed a web server that will serve as the user in
 	* **Interruption behavior**
 	* **Load Balancer registration**
 	* **EBS Optimized**
+
+	![Spot Request](images/spot_user_data.png)
+	
 15. Click **Review**, review your settings, and then click **Launch**.
 16. Wait until the request is fulfilled, capacity shows the specified number of Spot instances, and the status is Active.
 17. Once the workers come up, they should start processing the SQS messages automatically. Feel free to create some more jobs from the webpage.
 
+#### Optional: Auto-scale the Worker Fleet on EC2 Spot
+In the previous step, we specified two Spot instances, but what if we need to process more than two jobs at once? In this optional section we will configure auto-scaling so that new spot instances are created as more jobs get added to the queue.
+
+1. Go to the CloudWatch console, and click on **Alarms**.
+2. Click on **Create Alarm**. Select **SQS Metrics**. 
+3. Scroll down and select **ApproximateNumberOfMessagesVisible**. Click **Next**
+
+ 	![CW Alarm](images/spot_cw_alarm.png)
+ 
+4. We will create a threshold for scaling up. Name the alarm, set the threshold for **>= 2** messages for **2** consecutive periods. Delete the default notification actions and hit **Create**.
+ 
+ 	![CW Alarm](images/spot_cw_alarmfinal.png)
+ 
+ 5. Repeat these steps for the scale down policy. Name the alarm appropriately. Set the threshold for **<= 1** message for **3** consecutive periods.
+ 6. Return to **Spot Requests** in the EC2 Console.
+ 7. Select your fleet and go to the **Auto Scaling** tab at the bottom pane.
+ 8. Click **Configure**. On the next screen, click on **Scale Spot Fleet using step or simple scaling policies**
+
+ 	![CW Alarm](images/spot_auto_scale.png)
+
+ 9. Under the **ScaleUp** and **ScaleDown** policies, configure the appropriate alarms under **Policy trigger**.
+
+ 	![CW Alarm](images/spot_auto_scale_final.png)
+
+ 10. Click **Save**
+
 #### Evaluate the Results
-1. Check your S3 Bucket. In a few minutes you should see results start appearing the bucket. 
-2. If you monitor the SQS queue for messages you should see them being picked up by the worker nodes. 
+1. Check your S3 Bucket. In a few minutes, you should see results start appearing the bucket. 
+2. If you monitor the SQS queue for messages you should see them being picked up by the worker nodes.
+
+#### Terminate the Spot Fleet
+In the next lab, we will use [AWS Batch](https://aws.amazon.com/batch/) to create a managed batch process pipeline. We will reuse our existing queue, so let's terminate our EC2 Spot worker fleet.
+
+1. From the EC2 Console, select **Spot Requests** and click **Request Spot Instances**.
+2. Check the box beside the Spot fleet request containing your worker nodes.  The correct request will have a capacity of 2 and the shortest time since it was created.
+
+	> **IMPORTANT**: Take care not to cancel the Spot fleet request responsible for our workstation node (Jupyter/WebClient). It will have a capacity of 1 and the instance type will be m4.large.
+
+3. Under **Actions**, select **Cancel Spot request**. 
 
 **You've completed Lab 3, Congrats!**
 
@@ -284,16 +322,16 @@ The CloudFormation template deployed a web server that will serve as the user in
 <a name="lab4"></a>
 ### Lab	4 - Leverage a Fully Managed Solution using AWS Batch 
 
-1. From the AWS Console, enter URL as https://console.aws.amazon.com/batch/home?region=REPLACE_ME_WITH_REGION#/wizard .
- Replace REPLACE_ME_WITH_REGION in the above URL with the region that you are using.
+1. Go to the AWS Batch Console. The following instructions use teh first-run wizard. If the wizard does not show, replace the path at the end of the URL with /wizard. (e.g. [https://ap-southeast-2.console.aws.amazon.com/batch/home?region=ap-southeast-2#/wizard](https://ap-southeast-2.console.aws.amazon.com/batch/home?region=ap-southeast-2#/wizard))
 
 2. Select/Enter the following values
     * **How would you like to run your job ?** : No job submission and hit Next
     * **Compute environment name** : montecarlo-batch-worker
     * **Service role** and **EC2 instance role** : Leave it defaulted to "Create a new Role"
     * **Provisioning Model** : Spot
-    * **Allowed instance typese** : optimal
-    * **Spot fleet role** : select the role created earlier
+    * **Maximum bid price** : 100
+    * **Spot fleet role** : Select the role containing your workshop name
+    * **Allowed instance types** : optimal
     * **Minimum vCPUs** : 0
     * **Desired vCPUs** : 0
     * **Maximum vCPUs** : 20
@@ -307,7 +345,9 @@ The CloudFormation template deployed a web server that will serve as the user in
     * **Job definition name** :  montecarlo-queue-processor
     * **Job role** :  Select the one that appears in drop down, as created during setup
     * **Container image** :  anshrma/montecarlo-workshop-worker:latest
-    * **Memory (MiB)** :  500
+    
+    > We have created a docker container image containing the required libraries and the Worker code that we used in the previous lab. This container image is stored on [Dockerhub](https://hub.docker.com/r/anshrma/montecarlo-workshop-worker/). This is the image that we are pulling for our batch job.
+    
     * **Environment variables (Key)**  : REGION
     * **Environment variables (Value)**  : Name the region you are using, example us-east-1
     * Leave everything as default and click **Create job Definition**
@@ -336,8 +376,9 @@ Hopefully you've enjoyed the workshop and learned a few new things. Now follow t
 
 1. In the EC2 Console > Spot Requests, click **Cancel Spot request** under **Actions**. Make sure **Terminate instances** is checked.
 2. In the SQS Console, delete the queue that you created earlier. This is located under **Queue Actions**.
-3. In the S3 Console, locate the resultsBucket that was created for your workshop. Click on the bucket and select **Empty bucket**. You will need to copy and paste the bucket name in to confirm the aciton. 
-4. In the CloudFormation template, select the workshop stack and select **Actions** and then **Delete stack**.
+3. In the S3 Console, locate the resultsBucket that was created for your workshop. Click on the bucket and select **Empty bucket**. You will need to copy and paste the bucket name in to confirm the action. 
+4. Under AWS Batch, click on your running job and click **Terminate job**. Under **Job definitions**, click on your job definition and select **deregister**. Go to **Job queues**, then disable, and delete the configured job queue.
+5. In the CloudFormation template, select the workshop stack and select **Actions** and then **Delete stack**.
 
 <a name="appendix"></a>
 ##Appendix
@@ -345,6 +386,5 @@ Hopefully you've enjoyed the workshop and learned a few new things. Now follow t
 ### Estimated Costs
 The estimated cost for running this 2.5 hour workshop will be less than $5.
 
-### Learning Resources:
 
 
