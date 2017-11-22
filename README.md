@@ -122,12 +122,15 @@ The template sets up a VPC, IAM roles, S3 bucket, and an EC2 Instance. The EC2 i
 
 
 	Certificate Warning
+	
 	![Certificate Warning](images/cert_warning.png)
 	
 	Jupyter
+	
 	![CloudFormation Jupyter Complete](images/jupyter.png)
 	
 	Web
+	
 	![CloudFormation Web Client Complete](images/web.png)
 
 If there was an error during the stack creation process, CloudFormation will rollback and terminate.  You can investigate and troubleshoot by looking in the Events tab.  Any errors encountered during stack creation will appear in the event log. 
