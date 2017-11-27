@@ -37,6 +37,7 @@ These labs are designed to be completed in sequence.  If you are reading this at
 **Lab 1:** Setup the workshop environment on AWS  
 **Lab 2:** Explore the Algorithmic Trading Concepts with Jupyter  
 **Lab 3:** Deploy an Automated Trading Strategy  
+**Lab 4:** Leverage a Fully Managed Solution using AWS Batch  
 
 <a name="conventions"></a>
 ### Conventions:  
@@ -60,7 +61,9 @@ This section will appear again below as a reminder because you will be deploying
 <a name="begin"></a>
 ## Let's Begin!  
 <a name="lab1"></a>
-### Lab 1 - Set up the Workshop Environment on AWS: 
+### Lab 1 - Set up the Workshop Environment on AWS:
+
+![Lab 1 Architecture](images/lab1_arch.png) 
 
 #### Create an SSH Key   
 
@@ -154,7 +157,9 @@ The [Jupyter Notebook](http://jupyter.org/) allows you to create and share docum
 <a name="lab3"></a>
 ### Lab 3 - Deploy an Automated Trading Strategy on EC2 Spot Fleet:
 
-Now that we understand the basics of our trading strategy, lets get our hands dirty building out the batch processing pipeline. 
+Now that we understand the basics of our trading strategy, lets get our hands dirty building out the batch processing pipeline.
+
+![Lab 13 Architecture](images/lab3_arch.png) 
 
 
 #### Create a standard SQS Queue
@@ -321,6 +326,9 @@ In the next lab, we will use [AWS Batch](https://aws.amazon.com/batch/) to creat
 
 <a name="lab4"></a>
 ### Lab	4 - Leverage a Fully Managed Solution using AWS Batch 
+
+![Lab 4 Architecture](images/lab4_arch.png) 
+
 
 1. Go to the AWS Batch Console. The following instructions use teh first-run wizard. If the wizard does not show, replace the path at the end of the URL with /wizard. (e.g. [https://ap-southeast-2.console.aws.amazon.com/batch/home?region=ap-southeast-2#/wizard](https://ap-southeast-2.console.aws.amazon.com/batch/home?region=ap-southeast-2#/wizard))
 
