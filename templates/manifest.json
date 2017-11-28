@@ -1,21 +1,12 @@
 {
     "fileLocations": [
         {
-            "URIs": [
-                "https://s3.ap-northeast-2.amazonaws.com/spot-montecarlo-seoul-resultsbucket-1odmoc8vc77ph/1511220979175_PortfolioRiskAssessment.csv",
-                "https://s3.ap-northeast-2.amazonaws.com/spot-montecarlo-seoul-resultsbucket-1odmoc8vc77ph/1511220979175_amzn_MonteCarloSimResult.csv",
-                "https://s3.ap-northeast-2.amazonaws.com/spot-montecarlo-seoul-resultsbucket-1odmoc8vc77ph/1511220979175_amzn_portfolio_total.csv",
-                "https://s3.ap-northeast-2.amazonaws.com/spot-montecarlo-seoul-resultsbucket-1odmoc8vc77ph/1511220979175_amzn_sim_results.csv"
-            ]
-        },
-        {
             "URIPrefixes": [
+                "s3://<YOUR_S3_BUCKET_NAME>/"
             ]
         }
     ],
     "globalUploadSettings": {
-        "format": "CSV",
-        "delimiter": ",",
-        "containsHeader": "true"
+        "format": "CSV"
     }
 }
