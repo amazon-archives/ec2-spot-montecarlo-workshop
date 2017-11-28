@@ -82,6 +82,7 @@ At the top right hand corner of the AWS Console, you'll see a **Support** dropdo
 	>If you're on windows you'll need to convert the .pem file to .ppk to work with putty.  Here is a link to instructions for the file conversion - [Connecting to Your Linux Instance from Windows Using PuTTY](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html)
 	
 </p></details>
+
 #### Launch the Workshop template
 For your convenience, we provide a CloudFormation template to stand up the core infrastructure.  
 
