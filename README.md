@@ -67,7 +67,7 @@ This section will appear again below as a reminder because you will be deploying
 
 #### Create an SSH Key   
 
-First, you'll need to select a [region](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html). For this lab, you will need to choose a region where the AWS-provided Deep Learning AMI is available. (See below for a full list.) 
+First, you'll need to select a [region](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html). For this lab, you will need to choose either the Oregon or Ohio Region.
 
 <details>
 <summary><strong>SSH Key Pair Instructions (expand for details)</strong></summary><p>
