@@ -1,7 +1,7 @@
 '''
 ver 0.1, namera@ , initial-release, Oct26'17
 ver 0.2, namera@ , included execution id for traceability, Nov3'17
-ver 0.3, shawo@  , Corrected typos in variable names
+ver 0.3, shawo@  , Corrected typos in variable names, Apr23'18
 
 
 Hedge Your Own Funds: Running Monte Carlo Simulations on EC2 Spot
