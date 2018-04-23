@@ -32,7 +32,7 @@ If you'd like to learn more: [Basics of Algorithmic Trading: Concepts and Exampl
 
 <a name="Labs"></a>
 ### Lab Overview:  
-These labs are designed to be completed in sequence.  If you are reading this at a live AWS event, the workshop attendants will give you a high level run down of the labs.  Then it's up to you to follow the instructions below to complete the labs.  Don't worry if you're embarking on this journey in the comfort of your office or home - presentation materials can be found in the git repo in the top-level [presentation](https://github.com/awslabs/spot-montecarlo-workshop/tree/master/presentation) folder.
+These labs are designed to be completed in sequence.  If you are reading this at a live AWS event, the workshop attendants will give you a high level run down of the labs.  Then it's up to you to follow the instructions below to complete the labs.  Don't worry if you're embarking on this journey in the comfort of your office or home - presentation materials can be found in the git repo in the top-level [presentation](https://github.com/aws-samples/ec2-spot-montecarlo-workshop/tree/master/presentation) folder.
 
 **Lab 1:** Setup the workshop environment on AWS  
 **Lab 2:** Explore the Algorithmic Trading Concepts with Jupyter  
