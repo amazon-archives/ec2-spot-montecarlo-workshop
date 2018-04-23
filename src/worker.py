@@ -39,6 +39,7 @@ import numpy as np
 import datetime , time
 from math import sqrt
 from scipy.stats import norm
+import fix_yahoo_finance as yf
 
 
 import argparse
@@ -95,7 +96,7 @@ trading_days = 252 # Number of trading days
 STOCK="AMZN"
 
 '''
-
+yf.pdr_override()
 stock_df = pdr.get_data_yahoo(STOCK,start=datetime.datetime(2006, 10, 1), end=datetime.datetime(2017, 10, 1))
 
 #calculate the compound annual growth rate (CAGR) which 

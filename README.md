@@ -95,8 +95,13 @@ The template sets up a VPC, IAM roles, S3 bucket, and an EC2 Instance. The EC2 i
 
 	Region | Launch Template
 	------------ | -------------  
+	**N. Virginia** (us-east-1) | [![Launch Monte Carlo Workshop into Ohio with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml) 
 	**Ohio** (us-east-2) | [![Launch Monte Carlo Workshop into Ohio with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml)  
 	**Oregon** (us-west-2) | [![Launch Monte Carlo Workshop into Oregon with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml)
+	**Dublin** (eu-west-1) | [![Launch Monte Carlo Workshop into Ireland with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml)
+	**Tokyo** (ap-northeast-1) | [![Launch Monte Carlo Workshop into Tokyo with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml) 
+	**Seoul** (ap-northeast-2) | [![Launch Monte Carlo Workshop into Seoul with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml)
+	**Sydney** (ap-southeast-2) | [![Launch Monte Carlo Workshop into Sydney with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml)
 
 2. The template will automatically bring you to the CloudFormation Dashboard and start the stack creation process in the specified region. Click **Next** on the page it brings you to. Do not change anything on the first screen.
 
@@ -169,7 +174,7 @@ We will start by creating a managed message queue to store the batch job paramet
 >For regions that don't yet support FIFO queues, the console may look different than shown. Just name the queue and accept the defaults.
 
 
-3. Save the queue **Name** and **URL** for later use.
+3. Save the queue **ARN** and **URL** for later use.
 	
 	![SQS Info](images/sqs_info.png)
 	
@@ -184,12 +189,21 @@ Our EC2 instances run with an Instance Profile that contains an IAM role giving 
 
 	![IAM Role](images/iam_role.png)
 
-5. Under *Actions*, place a comma after the last action (e.g. `"logs:*"`).
-6. Add a new entry `"sqs:*"`which will give permission for all SQS actions. Click **Validate Policy**.
+5. Click on **Add additional permisions**. Click on **Choose a service** and select or type **SQS**.
 
-	![IAM Validate](images/iam_validate.png)
+	![IAM Role](images/iam_role_1.png)
 
-7. If the policy is valid, click **Save**.
+6. Click on **Select actions**. Under *Manual actions*, check the box beside **All SQS actions (sqs:\*)**. 
+
+	![IAM Role](images/iam_role_2.png)
+
+7. You will see a warning that you must choose a **queue resource type**. Click anywhere on the orange warning line. Under Resources, click on **Add ARN**.
+
+8. In the pop-up window, paste the *ARN* that you saved previously. Click **Add**.
+
+	![IAM Role](images/iam_role_3.png)
+	
+9. Click on **Review Policy** and then click **Save changes**.
 
 #### Configure the Web Client
 The CloudFormation template deployed a web server that will serve as the user interface. We need to configure it with our SQS queue
@@ -220,23 +234,24 @@ The CloudFormation template deployed a web server that will serve as the user in
 
 #### Create the Spot Worker Fleet
 1. From the EC2 Console, select **Spot Requests** and click **Request Spot Instances**.
-3. Select **Request and Maintain** to create a fleet of Spot Instances.
-4. For **Target Capacity**, type **2**
-5. Leave the Amazon Linux AMI as the Default.
-6. Each EC2 Instance type and family has it's own independent Spot Market price. Under **Instance Types**, Click **Select** and pick the *c3.xlarge*, *c3.2xlarge*, and *c4.xlarge* to diversify our fleet. Click **Select** again to return to the previous screen.
-7.  For **Allocation Strategy**, pick **Diversified**.
-8. For **Network**, pick the VPC we created for the Spot Monte Carlo Workshop.
-9. Under Availability Zone, check the box next to the first two AZs. The Network Subnet should auto-populate. If the subnet dropdown box says *"No subnets in this zone*, uncheck and select another AZ
-10.  Select **Use automated bidding**
+2. Select **Request and Maintain** to create a fleet of Spot Instances.
+3. For **Total target Capacity**, type **2**
+4. Leave the Amazon Linux AMI as the Default.
+5. Each EC2 Instance type and family has it's own independent Spot Market price. Under **Instance type(s)**, click **Select** and pick a few instance types (e.g. *c3.xlarge*, *c3.2xlarge*, and *c4.xlarge*) to diversify our fleet. Click **Select** again to return to the previous screen.
+6. For **Network**, pick the VPC we created for the Spot Monte Carlo Workshop.
+7. Under **Availability Zone**, check the box next to the first two AZs. The Network Subnet should auto-populate. If the subnet dropdown box says *"No subnets in this zone*, uncheck and select another AZ
+
 	![Spot Request](images/request_spot_configuration.png)
-11. Click **Next**
-12. We will use User Data to bootstrap our work nodes. Copy and paste the [spotlabworker.sh](https://github.com/aws-samples/ec2-spot-montecarlo-workshop/blob/master/templates/spotlabworker.sh) code from the repo We recommend using grabbing the latest code from the repo, but you can review the script below.
+
+8. For **Key pair name**, choose the SSH Key Pair that you specified in the CloudFormation template. 
+9. Under **Security groups** and  **IAM instance profile**, select the name with the prefix *spot-montecarlo workshop*.
+10. We will use User Data to bootstrap our work nodes. Copy and paste the [spotlabworker.sh](https://github.com/aws-samples/ec2-spot-montecarlo-workshop/blob/master/templates/spotlabworker.sh) code from the repo We recommend using grabbing the latest code from the repo, but you can review the script below.
 
 	<pre>
 	#!/bin/bash
 	# Install Dependencies
 	yum -y install git python-numpy python-matplotlib python-scipy
-	pip install pandas-datareader
+	pip install pandas-datareader fix_yahoo_finance
 	pip install scipy 
 	pip install boto3
 	
@@ -257,20 +272,20 @@ The CloudFormation template deployed a web server that will serve as the user in
 	echo 'Starting the worker processor'
 	python /home/ec2-user/spotlabworker/queue_processor.py --region $REGION> stdout.txt 2>&1
 	</pre>  
-12. Under **Tags**, Enter **Name** for *Key*. Enter **WorkerNode** for *Value*.
-13. Under **IAM instance profile**, pull the dropdown and select the profile beginning with the workshop name you configured in the CloudFormation Template.
-13. Select the Security Group named after your Workshop.
-14. We will accept the rest of the defaults, but take a moment at look at the options that you can configure for your Spot Fleet
+11. Under **Instance tags**, click on **Add new tag**. Enter **Name** for *Key*. Enter **WorkerNode** for *Value*.
+
+	![Spot Request](images/spot_config_2.png)
+
+12. We will accept the rest of the defaults, but take a moment at look at the options that you can configure for your Spot Fleet
 	* **Health Checks**
 	* **Interruption behavior**
-	* **Load Balancer registration**
+	* **Load Balancer Configuration**
 	* **EBS Optimized**
-
-	![Spot Request](images/spot_user_data.png)
+	* **Maximum Price**
 	
-15. Click **Review**, review your settings, and then click **Launch**.
-16. Wait until the request is fulfilled, capacity shows the specified number of Spot instances, and the status is Active.
-17. Once the workers come up, they should start processing the SQS messages automatically. Feel free to create some more jobs from the webpage.
+13. Click **Launch**.
+14. Wait until the request is fulfilled, capacity shows the specified number of Spot instances, and the status is Active.
+15. Once the workers come up, they should start processing the SQS messages automatically. Feel free to create some more jobs from the webpage.
 
 #### Optional: Auto-scale the Worker Fleet on EC2 Spot
 In the previous step, we specified two Spot instances, but what if we need to process more than two jobs at once? In this optional section we will configure auto-scaling so that new spot instances are created as more jobs get added to the queue.

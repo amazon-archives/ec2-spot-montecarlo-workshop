@@ -1,7 +1,7 @@
 #!/bin/bash
 	# Install Dependencies
-	yum -y install git python-numpy python-matplotlib	python-scipy
-	pip install pandas-datareader
+	yum -y install git python-numpy python-matplotlib python-scipy
+	pip install pandas-datareader fix_yahoo_finance
 	pip install scipy 
 	pip install boto3
 	
@@ -19,10 +19,5 @@
 	wget $WEBURL/static/queue_processor.py
 	wget $WEBURL/static/worker.py
 	
-#	echo "Configuring worker inputs"
-#    echo "QUEUE = 'Workshop'" > config.py
-#	echo "REGION = '$REGION'" >> config.py
-#	echo "Debug: "$(config.py)
-
 	echo 'Starting the worker processor'
 	python /home/ec2-user/spotlabworker/queue_processor.py --region $REGION> stdout.txt 2>&1
