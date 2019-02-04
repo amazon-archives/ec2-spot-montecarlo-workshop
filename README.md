@@ -32,7 +32,7 @@ If you'd like to learn more: [Basics of Algorithmic Trading: Concepts and Exampl
 
 <a name="Labs"></a>
 ### Lab Overview:  
-These labs are designed to be completed in sequence.  If you are reading this at a live AWS event, the workshop attendants will give you a high level run down of the labs.  Then it's up to you to follow the instructions below to complete the labs.  Don't worry if you're embarking on this journey in the comfort of your office or home - presentation materials can be found in the git repo in the top-level [presentation](https://github.com/aws-samples/ec2-spot-montecarlo-workshop/tree/master/presentation) folder.
+These labs are designed to be completed in sequence.  If you are reading this at a live AWS event, the workshop attendants will give you a high level run down of the labs.  Then it's up to you to follow the instructions below to complete the labs.  Don't worry if you're embarking on this journey in the comfort of your office or home - presentation materials can be found in the git repo in the top-level [presentation](./presentation) folder.
 
 **Lab 1:** Setup the workshop environment on AWS  
 **Lab 2:** Explore the Algorithmic Trading Concepts with Jupyter  
@@ -71,6 +71,7 @@ First, you'll need to select a [region](http://docs.aws.amazon.com/AWSEC2/latest
 
 <details>
 <summary><strong>SSH Key Pair Instructions (expand for details)</strong></summary><p>
+
 At the top right hand corner of the AWS Console, you'll see a **Support** dropdown. To the left of that is the region selection dropdown.
 
 2. Then you'll need to create an SSH key pair which will be used to login to the instances once provisioned.  Go to the EC2 Dashboard and click on **Key Pairs** in the left menu under Network & Security.  Click **Create Key Pair**, provide a name (can be anything, make it something memorable) when prompted, and click **Create**.  Once created, the private key in the form of .pem file will be automatically downloaded.  
@@ -86,22 +87,22 @@ At the top right hand corner of the AWS Console, you'll see a **Support** dropdo
 #### Launch the Workshop template
 For your convenience, we provide a CloudFormation template to stand up the core infrastructure.  
 
-The template sets up a VPC, IAM roles, S3 bucket, and an EC2 Instance. The EC2 instance will run a Jupyter Notebook which we will leverage in Lab 2 and a small website that we will use in Lab 3. The idea is to provide a contained environment, so as not to interfere with any other provisioned resources in your account.  In order to demonstrate cost optimization strategies, the EC2 Instance is an [EC2 Spot Instance](https://aws.amazon.com/ec2/spot/) deployed by [Spot Fleet](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet.html).  If you are new to [CloudFormation](https://aws.amazon.com/cloudformation/), take the opportunity to review the [template](https://github.com/awslabs/spot-motecarlo-workshop/blob/master/lab-1-setup/cfn-templates/spot-montecarlo-workshop.yaml) during stack creation.
+The template sets up a VPC, IAM roles, S3 bucket, and an EC2 Instance. The EC2 instance will run a Jupyter Notebook which we will leverage in Lab 2 and a small website that we will use in Lab 3. The idea is to provide a contained environment, so as not to interfere with any other provisioned resources in your account.  In order to demonstrate cost optimization strategies, the EC2 Instance is an [EC2 Spot Instance](https://aws.amazon.com/ec2/spot/) deployed by [Spot Fleet](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet.html).  If you are new to [CloudFormation](https://aws.amazon.com/cloudformation/), take the opportunity to review the [template](./templates/monte-carlo-workshop.yaml) during stack creation.
 
 
 >**Important:** Prior to launching a stack, be aware that a few of the resources launched need to be manually deleted when the workshop is over. When finished working, please review the "Workshop Cleanup" section to learn what manual teardown is required by you.
 
 1. Click on one of these CloudFormation templates that matches the region you created your keypair in to launch your stack:  
 
-	Region | Launch Template
-	------------ | -------------  
-	**N. Virginia** (us-east-1) | [![Launch Monte Carlo Workshop into Ohio with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml) 
-	**Ohio** (us-east-2) | [![Launch Monte Carlo Workshop into Ohio with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml)  
-	**Oregon** (us-west-2) | [![Launch Monte Carlo Workshop into Oregon with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml)
-	**Dublin** (eu-west-1) | [![Launch Monte Carlo Workshop into Ireland with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml)
-	**Tokyo** (ap-northeast-1) | [![Launch Monte Carlo Workshop into Tokyo with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml) 
-	**Seoul** (ap-northeast-2) | [![Launch Monte Carlo Workshop into Seoul with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml)
-	**Sydney** (ap-southeast-2) | [![Launch Monte Carlo Workshop into Sydney with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml)
+	| Region | Launch Template|
+	|------------ |:-------------:|
+	| **N. Virginia** (us-east-1) | [![Launch Monte Carlo Workshop into Ohio with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml) |
+	| **Ohio** (us-east-2) | [![Launch Monte Carlo Workshop into Ohio with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml) |
+	| **Oregon** (us-west-2) | [![Launch Monte Carlo Workshop into Oregon with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml) |
+	| **Dublin** (eu-west-1) | [![Launch Monte Carlo Workshop into Ireland with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml) |
+	| **Tokyo** (ap-northeast-1) | [![Launch Monte Carlo Workshop into Tokyo with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml) |
+	| **Seoul** (ap-northeast-2) | [![Launch Monte Carlo Workshop into Seoul with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml) |
+	| **Sydney** (ap-southeast-2) | [![Launch Monte Carlo Workshop into Sydney with CloudFormation](images/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=spot-montecarlo-stack&templateURL=https://s3-us-west-2.amazonaws.com/reinvent2017-cmp316/monte-carlo-workshop.yaml) |
 
 2. The template will automatically bring you to the CloudFormation Dashboard and start the stack creation process in the specified region. Click **Next** on the page it brings you to. Do not change anything on the first screen.
 
@@ -148,7 +149,7 @@ The [Jupyter Notebook](http://jupyter.org/) allows you to create and share docum
 
 1. Log into the Jupyter Notebook using the **Jupyter** URL output from the CloudFormation Template using the password you configured when building the stack. 
 
-2. Click on the notebook named *monte-carlo-workshop.ipynb* and it should open in a new tab.
+2. Click on the notebook named [*monte-carlo-workshop.ipynb*](src/monte-carlo-workshop.ipynb) and it should open in a new tab.
 3. Follow the instructions in the Notebook to complete Lab 2. If you're new to Jupyter, you press shift-enter to run code and/or proceed to the next section. When you're done with the Notebook, return here and we'll take the concepts we learned in this lab and build our own automated pipeline.
 
 **You've completed Lab 2, Congrats!**
@@ -245,33 +246,33 @@ The CloudFormation template deployed a web server that will serve as the user in
 
 8. For **Key pair name**, choose the SSH Key Pair that you specified in the CloudFormation template. 
 9. Under **Security groups** and  **IAM instance profile**, select the name with the prefix *spot-montecarlo workshop*.
-10. We will use User Data to bootstrap our work nodes. Copy and paste the [spotlabworker.sh](https://github.com/aws-samples/ec2-spot-montecarlo-workshop/blob/master/templates/spotlabworker.sh) code from the repo We recommend using grabbing the latest code from the repo, but you can review the script below.
+10. We will use User Data to bootstrap our work nodes. Copy and paste the [spotlabworker.sh](./templates/spotlabworker.sh) code from the repo We recommend using grabbing the latest code from the repo, but you can review the script below.
 
-	<pre>
-	#!/bin/bash
-	# Install Dependencies
-	yum -y install git python-numpy python-matplotlib python-scipy
-	pip install pandas-datareader fix_yahoo_finance
-	pip install scipy 
-	pip install boto3
-	
-	#Populate Variables
-    echo 'Populating Variables'
-	REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}'`
-	mkdir /home/ec2-user/spotlabworker
-	chown ec2-user:ec2-user /home/ec2-user/spotlabworker
-	cd /home/ec2-user/spotlabworker
-	WEBURL=$(aws cloudformation --region $REGION describe-stacks --query 'Stacks[0].Outputs[?OutputKey==`WebInterface`].OutputValue' --output text)
-	echo 'Region is '$REGION
-    echo 'URL is '$WEBURL
+```bash
+#!/bin/bash
+# Install Dependencies
+yum -y install git python-numpy python-matplotlib python-scipy python-pip
+pip install --upgrade pandas-datareader fix_yahoo_finance scipy boto3 awscli
 
-    echo "Downloading worker code"
-	wget $WEBURL/static/queue_processor.py
-	wget $WEBURL/static/worker.py
-	
-	echo 'Starting the worker processor'
-	python /home/ec2-user/spotlabworker/queue_processor.py --region $REGION> stdout.txt 2>&1
-	</pre>  
+#Populate Variables
+echo 'Populating Variables'
+REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}'`
+mkdir /home/ec2-user/spotlabworker
+chown ec2-user:ec2-user /home/ec2-user/spotlabworker
+cd /home/ec2-user/spotlabworker
+WEBURL=$(aws cloudformation --region $REGION describe-stacks --query 'Stacks[0].Outputs[?OutputKey==`WebInterface`].OutputValue' --output text)
+echo 'Region is '$REGION
+echo 'URL is '$WEBURL
+
+echo "Downloading worker code"
+wget $WEBURL/static/queue_processor.py
+wget $WEBURL/static/worker.py
+
+echo 'Starting the worker processor'
+python /home/ec2-user/spotlabworker/queue_processor.py --region $REGION> stdout.txt 2>&1
+```
+
+
 11. Under **Instance tags**, click on **Add new tag**. Enter **Name** for *Key*. Enter **WorkerNode** for *Value*.
 
 	![Spot Request](images/spot_config_2.png)
@@ -361,9 +362,9 @@ In the next lab, we will use [AWS Batch](https://aws.amazon.com/batch/) to creat
 4. Go to **Job Definition** , hit **Create** and enter the following details
     * **Job definition name** :  montecarlo-queue-processor
     * **Job role** :  Select the one that appears in drop down, as created during setup
-    * **Container image** :  anshrma/montecarlo-workshop-worker:latest
+    * **Container image** :  ruecarlo/montecarlo-workshop-worker:latest
     
-    > We have created a docker container image containing the required libraries and the Worker code that we used in the previous lab. This container image is stored on [Dockerhub](https://hub.docker.com/r/anshrma/montecarlo-workshop-worker/). This is the image that we are pulling for our batch job.
+    > We have created a docker container image containing the required libraries and the Worker code that we used in the previous lab. This container image is stored on [Dockerhub](https://hub.docker.com/r/ruecarlo/montecarlo-workshop-worker/). This is the image that we are pulling for our batch job.
     
     * **Environment variables (Key)**  : REGION
     * **Environment variables (Value)**  : Name the region you are using, example us-east-1
@@ -413,7 +414,7 @@ Hopefully you've enjoyed the workshop and learned a few new things. Now follow t
 5. In the CloudFormation template, select the workshop stack and select **Actions** and then **Delete stack**.
 
 <a name="appendix"></a>
-##Appendix
+## Appendix
 
 ### Estimated Costs
 The estimated cost for running this 2.5 hour workshop will be less than $5.
